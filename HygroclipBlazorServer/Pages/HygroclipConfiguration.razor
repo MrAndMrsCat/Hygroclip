@@ -1,0 +1,45 @@
+﻿@page "/hygroclip_configuration"
+@using HygroclipBlazorServer.Devices
+
+<PageTitle>Configuration</PageTitle>
+
+@*<h1>Configuration</h1>*@
+
+<h1 role="status">Selected com port: @comPort</h1>
+@*<p role="status">Available ports: @comPorts</p>
+<button class="btn btn-primary" @onclick="RefreshPorts">Refresh ports</button>*@
+
+@code {
+    private HygroclipControllerModel? _hygroclipModel;
+    private string? comPort;
+    private string? comPorts;
+
+    protected override void OnInitialized()
+    {
+        _hygroclipModel ??= Program.HardwareModel.HygroclipController;
+
+        if (_hygroclipModel is not null)
+        {
+            comPort = _hygroclipModel.SelectedSerialPort;
+
+            void UpdateFields()
+            {
+                comPort = _hygroclipModel.SelectedSerialPort;
+                comPorts = string.Join("  ", _hygroclipModel.SerialPorts);
+            }
+
+            UpdateFields();
+
+            _hygroclipModel.ComPortListUpdated += (s, ports) =>
+            {
+                _ = InvokeAsync(() =>
+                {
+                    UpdateFields();
+                    StateHasChanged();
+                });
+            };
+        }
+    }
+
+    private void RefreshPorts() => _hygroclipModel?.UpdateComPortList();
+}

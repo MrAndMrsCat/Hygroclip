@@ -1,0 +1,144 @@
+﻿@page "/measurement_chart"
+@using ChartJs.Blazor
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.LineChart
+@using Microsoft.EntityFrameworkCore
+@using Data
+@inject EnvironmentalMeasurementService MeasurementService
+
+
+<Chart Config="_chartConfig"></Chart>
+ 
+@code{
+    [Parameter]
+    public TimeSpan Span { get; set; } = TimeSpan.FromHours(1);
+
+    private int ChartPointCount { get; set; } = 50;
+    private TimeSpan MinimumPointInterval { get; set; } = TimeSpan.FromSeconds(1);
+
+    private LineConfig? _chartConfig;
+    private LineDataset<TimePoint>? _tempeartureDataSet;
+    private LineDataset<TimePoint>? _humidityDataSet;
+
+    protected override Task OnInitializedAsync()
+    {
+                _chartConfig = new LineConfig
+            {
+                Options = new LineOptions
+                {
+                    Responsive = true,
+
+                    Scales = new Scales
+                    {
+                        XAxes = new List<CartesianAxis>
+                    {
+                        new TimeAxis
+                        {
+                            Time = new TimeOptions
+                            {
+                                MinUnit = TimeMeasurement.Minute,
+                                StepSize =1,
+                                Unit = TimeMeasurement.Minute,
+                            }
+                        }
+                    },
+
+                    YAxes = new List<CartesianAxis>
+                    {
+                        new LinearCartesianAxis()
+                        {
+                            ID = "y1",
+                            Display = AxisDisplay.True,
+                            Position = Position.Left,
+                            Ticks = new LinearCartesianTicks()
+                            {
+                                StepSize = 0.2,
+                                Major = new MajorTicks()
+                                {
+                                    Enabled = true,
+                                },
+
+                                SuggestedMax = 19,
+                                SuggestedMin = 21,
+                            },
+                            Offset = true,
+
+                        },
+                        new LinearCartesianAxis()
+                        {
+                            ID = "y2",
+                            Display = AxisDisplay.True,
+                            Position = Position.Right,
+                            GridLines = new GridLines()
+                            {
+                                DrawOnChartArea = false,
+                            },
+                            Ticks = new LinearCartesianTicks()
+                            {
+                                StepSize = 1,
+                                Major = new MajorTicks()
+                                {
+                                    Enabled = true,
+                                },
+                            },
+                            Offset = true,
+                        }
+                    },
+                }
+            },
+        };
+
+        _tempeartureDataSet = new LineDataset<TimePoint>
+        {
+            Label = "Temperature (°C)",
+            BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.DarkRed),
+            BorderColor = ColorUtil.FromDrawingColor(System.Drawing.Color.DarkRed),
+            PointRadius = 0,
+            Fill = FillingMode.Disabled,
+            YAxisId = "y1"
+        };
+
+        _humidityDataSet = new LineDataset<TimePoint>
+        {
+            Label = "Humidity (%)",
+            BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Blue),
+            BorderColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Blue),
+            PointRadius = 0,
+            Fill = FillingMode.Disabled,
+            YAxisId = "y2"
+        };
+
+        _chartConfig?.Data.Datasets.Add(_tempeartureDataSet);
+        _chartConfig?.Data.Datasets.Add(_humidityDataSet);
+
+        MeasurementService.DatabaseUpdated += async (s, e) =>
+        {
+            await UpdateChartAsync();
+            _ = InvokeAsync(StateHasChanged);
+        };
+
+        return UpdateChartAsync();
+    }
+
+    private async Task UpdateChartAsync()
+    {
+        var measurments = await MeasurementService.GetMeasurementsAsync(DateTime.Now - Span);
+
+        if (measurments is not null)
+        {
+            _tempeartureDataSet?.Clear();
+            _humidityDataSet?.Clear();
+
+            foreach (var measurement in measurments)
+            {
+                _tempeartureDataSet?.Add(new TimePoint(measurement.DateTime, measurement.Temperature));
+                _humidityDataSet?.Add(new TimePoint(measurement.DateTime, measurement.Humidity));
+            }
+        }
+    }
+}

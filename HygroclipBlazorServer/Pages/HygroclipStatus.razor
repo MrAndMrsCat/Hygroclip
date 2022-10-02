@@ -1,0 +1,47 @@
+﻿@page "/hygroclip_status"
+@using Devices
+@*@inject Devices.SystemDevicesModel HardwareModel*@
+
+<PageTitle>Hygroclip</PageTitle>
+
+<h1 role="status">Temperature: @temperature.ToString("N2")°C | Humidity: @humidity.ToString("N1")%</h1>
+
+@code {
+    private double temperature = 0;
+    private double humidity = 0;
+
+    private HygroclipControllerModel? _hygroclipController;
+
+    protected override Task OnInitializedAsync()
+    {
+        _hygroclipController ??= Program.HardwareModel.HygroclipController;
+
+        if (_hygroclipController is not null)
+        {
+            _hygroclipController.NewEnvironmentalMeasurement += (s, meas) =>
+            {
+                _ = InvokeAsync(() =>
+                {
+                    temperature = meas.Temperature;
+                    humidity = meas.Humidity;
+
+                    StateHasChanged();
+                });
+            };
+        }
+
+        return UpdateStatusAsync();
+    }
+
+    private async Task UpdateStatusAsync()
+    {
+        await Task.Run(() =>
+        {
+            if (_hygroclipController is not null)
+            {
+                temperature = _hygroclipController.Tempearture;
+                humidity = _hygroclipController.Humidity;
+            }
+        });
+    }
+}
