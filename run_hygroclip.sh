@@ -1,0 +1,1 @@
+docker run --rm -it --name hygroclip -p 7139:80 --device=/dev/ttyUSB0 hygroclip:master

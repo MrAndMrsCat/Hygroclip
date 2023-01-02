@@ -1,0 +1,19 @@
+﻿sudo dmesg | grep tty
+
+stty -F /dev/ttyS0 19200 cs8 -cstopb -parenb
+
+echo -ne '{ 99RDD}\r' > /dev/ttyS0
+echo -ne '{ 99RDD}\x13' > /dev/ttyS0
+
+cat -v < /dev/ttyS0
+
+
+ lsusb
+ 
+ 
+stty -F /dev/ttyUSB0 19200 cs8 -cstopb -parenb
+
+echo -ne '{ 99RDD}\r' > /dev/ttyUSB0
+echo -ne '{ 99RDD}\x13' > /dev/ttyUSB0
+
+cat -v < /dev/ttyUSB0

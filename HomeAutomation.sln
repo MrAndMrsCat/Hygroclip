@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HygroclipDriver", "HygroclipDriver\HygroclipDriver.csproj", "{F520AF68-3FD2-42B7-98C7-932E9F10CFF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HygroclipDesktop", "HygroclipDesktop\HygroclipDesktop.csproj", "{2B048EAA-6312-4038-83D3-E79CC5387F17}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeAutomationServer", "HomeAutomationServer\HomeAutomationServer.csproj", "{E3BD5BC0-E999-4321-B56B-7A30032D338C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B96F1CA5-6876-47B8-89EC-84ADD255C190}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicoController", "PicoController\PicoController.csproj", "{AB62CA60-7963-4B60-A849-7100CDDA5145}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicoControlApp", "PicoControlApp\PicoControlApp.csproj", "{BF368EC0-0847-444A-B3AD-2BD0A9C22810}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PicoControllerMicroPython", "PicoControllerMicroPython\PicoControllerMicroPython.pyproj", "{10036263-C838-4733-9A41-80775055693C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F520AF68-3FD2-42B7-98C7-932E9F10CFF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F520AF68-3FD2-42B7-98C7-932E9F10CFF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F520AF68-3FD2-42B7-98C7-932E9F10CFF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F520AF68-3FD2-42B7-98C7-932E9F10CFF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B048EAA-6312-4038-83D3-E79CC5387F17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B048EAA-6312-4038-83D3-E79CC5387F17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B048EAA-6312-4038-83D3-E79CC5387F17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B048EAA-6312-4038-83D3-E79CC5387F17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3BD5BC0-E999-4321-B56B-7A30032D338C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3BD5BC0-E999-4321-B56B-7A30032D338C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3BD5BC0-E999-4321-B56B-7A30032D338C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3BD5BC0-E999-4321-B56B-7A30032D338C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB62CA60-7963-4B60-A849-7100CDDA5145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB62CA60-7963-4B60-A849-7100CDDA5145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB62CA60-7963-4B60-A849-7100CDDA5145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB62CA60-7963-4B60-A849-7100CDDA5145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF368EC0-0847-444A-B3AD-2BD0A9C22810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF368EC0-0847-444A-B3AD-2BD0A9C22810}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF368EC0-0847-444A-B3AD-2BD0A9C22810}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF368EC0-0847-444A-B3AD-2BD0A9C22810}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10036263-C838-4733-9A41-80775055693C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10036263-C838-4733-9A41-80775055693C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {936B55B1-B7CE-4270-AB26-5D27942667D1}
+	EndGlobalSection
+EndGlobal

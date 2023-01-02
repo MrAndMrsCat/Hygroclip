@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  sqlserver:
+    container_name: sqlserver
+    hostname: sqlserver
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Hygr0clip
+    volumes:
+      - /data:/var/opt/mssql/data
+      - /log:/var/opt/mssql/log
+      - /secrets:/var/opt/mssql/secrets
+    logging:
+      driver: local
+    ports:
+      - 1433:1433
+
+  hygroclip:
+    container_name: hygroclip
+    image: hygroclip:master
+    command:
+      - -sqladdress
+      -  192.168.30.3
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+    ports:
+      - 7139:80
+    depends_on:
+      - sqlserver

@@ -1,0 +1,2 @@
+rsync -a --progress "/mnt/c/Users/messeal/OneDrive - Lam Research/Source/Hygroclip/" \
+/mnt/nuc/storage/docker/Hygroclip/. --exclude *.git --exclude *.vs --exclude *bin --exclude *obj --exclude *publishprofiles --exclude *jenkins

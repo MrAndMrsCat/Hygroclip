@@ -1,0 +1,174 @@
+﻿@page "/pico_controller_status"
+@using Devices
+@using PicoController
+@using Shirehorse.Core.Extensions
+
+<PageTitle>Boiler Controller</PageTitle>
+
+<h1 role="status">Setpoint: @temperatureSetpoint.ToString("N1")°C
+    <input type="range" min="5" max="25" step="0.5" @bind=temperatureSetpoint />
+</h1>
+
+<h2>
+    Mode:
+    <button @onclick="Mode_Clicked">
+        @mode
+    </button>
+    <br />
+    Boost:
+    <button @onclick="BoostEnabled_Clicked">
+        @(boostEnabled ? $"ON for {boostTime:0} min" : "OFF")
+    </button>
+</h2>
+
+@if (_boilerController.TimerPolicy is not null)
+{
+    <p><br /></p>
+    <h4>
+        
+        <button @onclick="ShowTimerSetpoints_Clicked">
+            Timer Setpoints
+        </button>
+    </h4>
+
+    if (showTimerSetpoints)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Hour</th>
+                    <th>Minute</th>
+                    <th>Setpoint</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var setpoint in _boilerController.TimerPolicy.OrderedSetpoints)
+                {
+                    <tr>
+                        <td>@setpoint.Day</td>
+                        <td>@setpoint.Hour</td>
+                        <td>@setpoint.Min</td>
+                        <td>@(setpoint.Enabled ? "ON" : "OFF")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+<h4>
+    <button @onclick="ShowDiagnostics_Clicked">
+        Diagnostics
+    </button>
+</h4>
+
+@if (parameters is null)
+{
+    <p><em>No connection..</em></p>
+}
+else
+{
+    if (showDiagnostics)
+    {
+        <p>
+            Boiler Enabled: @boilerEnabled<br />
+            Temperature Controller State: @_boilerController.ControlPolicy?.ControlState<br />
+            Controler Deadband: 
+            <select @onchange="TemperatureControlDeadband_OnChange" >
+                @foreach (double deadband in new double[] { 0.0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0 })
+                {
+                    <option value=@deadband>@deadband.ToString("N1")</option>
+                }
+            </select>
+            - @_boilerController.ControlPolicy?.ThermostatDeadband°C<br />
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Parameters</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var (key, value) in parameters)
+                {
+                    <tr>
+                        <td>@key</td>
+                        <td>@value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <p>
+            Timer Policy Setpoint: @_boilerController.TimerPolicy?.CurrentSetpoint
+        </p>
+    }
+}
+
+@code {
+    private PicoBoilerControllerModel _boilerController => Program.HardwareModel.PicoBoilerController;
+
+    private bool connected => _boilerController?.Connected ?? false;
+
+    private bool showTimerSetpoints;
+    private bool showDiagnostics = true;
+
+    private void ShowTimerSetpoints_Clicked() => showTimerSetpoints = !showTimerSetpoints;
+    private void ShowDiagnostics_Clicked() => showDiagnostics = !showDiagnostics;
+
+    private bool boilerEnabled
+    {
+        get => _boilerController.BoilerEnabled;
+        set => _boilerController.BoilerEnabled = value;
+    }
+    private float temperatureSetpoint
+    {
+        get => _boilerController.TemperatureSetpoint;
+        set => _boilerController.TemperatureSetpoint = value;
+    }
+
+    private SortedDictionary<string, string>? parameters => _boilerController.StatusParameters;
+
+    private bool boostEnabled => _boilerController.BoostEnabled;
+    private double? boostTime => _boilerController.TimerPolicy?.BoostEndMinutes;
+
+    private PicoBoilerTimerControlPolicy.ControlMode mode
+    {
+        get => _boilerController.Mode;
+        set => _boilerController.Mode = value;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() =>
+        {
+            _boilerController.StatusReceived += (s, e) => InvokeAsync(StateHasChanged);
+            _boilerController.ConnectionChanged += (s, e) => InvokeAsync(StateHasChanged);
+
+            if(_boilerController.ControlPolicy is not null)
+            {
+                _boilerController.ControlPolicy.StateChanged += (s, e) => InvokeAsync(StateHasChanged);
+            }
+        });
+    }
+
+    private void BoostEnabled_Clicked() => _boilerController.Boost();
+
+    private void Mode_Clicked()
+    {
+        int enumCount = Enum.GetValues(typeof(PicoBoilerTimerControlPolicy.ControlMode)).Length;
+        int newEnum = ((int)_boilerController.Mode + 1) % enumCount;
+        mode = (PicoBoilerTimerControlPolicy.ControlMode)newEnum;
+    }
+
+    private void TemperatureControlDeadband_OnChange(ChangeEventArgs e)
+    {
+        if (_boilerController.ControlPolicy is not null && float.TryParse($"{e.Value}", out float value))
+        {
+            _boilerController.ControlPolicy.ThermostatDeadband = value;
+        }
+    }
+}

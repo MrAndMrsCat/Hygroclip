@@ -1,0 +1,6 @@
+useradd -M -s /bin/bash -u 10001 -g 0 mssql
+
+sudo mkdir -p /var/opt/mssql/data/
+sudo mkdir -p /opt/mssql/bin/sqlservr
+
+sudo chown 10001 /opt/mssql/bin/sqlservr
