@@ -133,11 +133,13 @@ namespace PicoController
 
                     case ControlMode.OFF:
                         TemperatureControlPolicy.ControlEnabled = false;
-                        _boilerInterface.BoilerEnabled = false;
                         break;
                 }
 
-
+                if (!TemperatureControlPolicy.ControlEnabled)
+                {
+                    _boilerInterface.BoilerEnabled = false;
+                }
             }
         }
 

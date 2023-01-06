@@ -5,18 +5,15 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["HygroclipBlazorServer/HygroclipBlazorServer.csproj", "HygroclipBlazorServer/"]
+COPY ["HomeAutomationServer/HomeAutomationServer.csproj", "HomeAutomationServer/"]
 COPY ["HygroclipDriver/HygroclipDriver.csproj", "HygroclipDriver/"]
 COPY ["PicoController/PicoController.csproj", "PicoController/"]
-RUN dotnet restore "HygroclipBlazorServer/HygroclipBlazorServer.csproj"
+RUN dotnet restore "HomeAutomationServer/HomeAutomationServer.csproj"
 COPY . .
-WORKDIR "/src/HygroclipBlazorServer"
-RUN dotnet build "HygroclipBlazorServer.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "HygroclipBlazorServer.csproj" -c Release -o /app/publish
+WORKDIR "/src/HomeAutomationServer"
+RUN dotnet publish "HomeAutomationServer.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "HygroclipBlazorServer.dll"]
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "HomeAutomationServer.dll"]
