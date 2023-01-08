@@ -39,6 +39,8 @@ namespace PicoController
         public float Humidity => _humidity;
         private float _humidity = float.NaN;
 
+        public bool ControlEnabledStatus { get; set; }
+
         public SortedDictionary<string, string>? StatusParameters { get; private set; }
 
         public event EventHandler<Dictionary<string, string>>? StatusReceived;
@@ -187,7 +189,14 @@ namespace PicoController
 
         public void RequestStatus() => SendMessage("req_status");
         public void InitializeDevice() => SendMessage("initialize");
-        public void SetBoilerEnabled(bool enabled) => SendParameters(new() { { $"boiler_enabled", enabled } });
+        public void SetBoilerEnabled(bool enabled)
+        {
+            SendParameters(new()
+            {
+                { $"boiler_enabled", enabled },
+                { $"control_enabled", ControlEnabledStatus },
+            });
+        }
         public void SendMeasurment(float temperature, float humidity)
         {
             SendParameters(new() 
@@ -196,6 +205,7 @@ namespace PicoController
                 { "humidity", humidity },
             });
         }
+        public void SendControlStatus(bool enabled) => SendParameters(new() { { $"control_enabled", enabled } });
         public void SendTemperatureSetpoint(float temperature) => SendParameters(new() { { $"temperature_setpoint", temperature } });
         public void SetTime()
         {

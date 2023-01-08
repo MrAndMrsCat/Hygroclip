@@ -105,6 +105,11 @@ else
         <p>
             Timer Policy Setpoint: @_boilerController.TimerPolicy?.CurrentSetpoint
         </p>
+
+        <input @bind=sendMessageText />
+        <button @onclick="SendMessage_Clicked">
+            Send Message
+        </button>
     }
 }
 
@@ -141,6 +146,8 @@ else
         set => _boilerController.Mode = value;
     }
 
+    private string sendMessageText = "";
+
     protected override async Task OnInitializedAsync()
     {
         await Task.Run(() =>
@@ -154,6 +161,8 @@ else
             }
         });
     }
+
+    private void SendMessage_Clicked() => _boilerController.SendMessage(sendMessageText);
 
     private void BoostEnabled_Clicked() => _boilerController.Boost();
 

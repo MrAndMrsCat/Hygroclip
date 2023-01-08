@@ -86,10 +86,16 @@ public class PicoBoilerTemperatureControlPolicy
         _fsm[State.DelayingActuation, State.Disabled] = new();
 
         // Actions
-        _fsm[State.Disabled].EntryAction = () => _boilerInterface.BoilerEnabled = false;
+        _fsm[State.Disabled].EntryAction = () =>
+        {
+            _boilerInterface.BoilerEnabled = false;
+            _boilerInterface.ControlEnabledStatus = false;
+        };
 
         _fsm[State.Controlling] = new() 
         {
+            EntryAction= () => _boilerInterface.ControlEnabledStatus = true,
+
             // prevent frequent actuation, could damage boiler..
             PollingInterval = 5000,
             PollingCompleteState = State.DelayingActuation,

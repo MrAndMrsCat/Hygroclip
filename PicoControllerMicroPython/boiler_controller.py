@@ -7,8 +7,10 @@ from stepper_motor import StepperMotor
 from onboard_led import OnboardLED
 from event_handler import EventHandler
 from microdiagnostics import MicroDiagnostics
+from settings import Settings
 
 logger = MicroLogger("BoilerInterface")
+settings = Settings()
 
 class BoilerController(object):
     def __init__(self, ssid: str, password: str, static_ip: str, gateway: str):
@@ -110,6 +112,9 @@ class BoilerController(object):
                 machine.RTC().datetime(dt)
                 continue # discard
 
+            if key == "enable_ui":
+                settings.set("enable_ui", value)
+
             logger.verb(f"set_parameter {key}={value}")
             self.params[key] = value
         self.parameters_changed.invoke(self, parameters)
@@ -127,7 +132,7 @@ class BoilerController(object):
         self.params["boiler_enabled"] = enabled
         self.led.value(enabled)
         self._send_status()
-        # self.boiler_enabled_changed.invoke(self, enabled)
+        self.boiler_enabled_changed.invoke(self, enabled)
 
 
     def initialize(self):

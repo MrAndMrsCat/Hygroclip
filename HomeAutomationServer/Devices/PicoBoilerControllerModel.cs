@@ -74,4 +74,6 @@ public class PicoBoilerControllerModel
     {
         _boilerController.SendMeasurment(tempearure, humidity);
     }
+
+    internal void SendMessage(string message) => _boilerController.SendMessage(message);
 }

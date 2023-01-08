@@ -1,5 +1,6 @@
 import uasyncio as asyncio
 from micrologger import MicroLogger
+from settings import Settings
 from boiler_controller import BoilerController
 from event_timer import EventTimer
 from microdiagnostics import MicroDiagnostics
@@ -11,6 +12,8 @@ MicroLogger.level = MicroLogger.DEBUG
 MicroLogger.directory = "/logs"
 MicroLogger.retention_count = 3
 logger = MicroLogger("System")
+settings = Settings()
+MAX_BOOT_FAILURES = 3
 
 class System(object):
     def __init__(self, ui: bool = False):
@@ -51,7 +54,7 @@ class System(object):
         else:
             self._boiler_timeout_timer.stop()
 
-        self._set_ui_indicator("boiler_enabled", enabled)
+        self._set_ui_boiler_enabled(enabled)
            
             
     def _boiler_timeout_elapsed(self, sender, args):
@@ -75,6 +78,15 @@ class System(object):
 
         self.controller.server.connection_changed.add(self._server_connection_changed)
 
+
+    def _set_ui_boiler_enabled(self, enabled: bool):
+        if self.ui is not None:
+            try:
+                self.ui.set_boiler_enabled(enabled)
+            except Exception as ex:
+                logger.exception(ex)
+
+
     def _set_ui_indicator(self, name: str, value: bool):
         if self.ui is not None:
             try:
@@ -96,10 +108,34 @@ class System(object):
             self._set_ui_indicator(name, value)
 
 
-system = System(ui=False)
+def boot_check():
+    boot_failures = int(settings.get("boot_failures") or 0)
+    
+    if boot_failures >= MAX_BOOT_FAILURES:
+        print(f"boot abort, {boot_failures} consecutive failures")
+        settings.set("autostart", False)
+        return False
+    else:
+        boot_failures += 1
+        settings.set("boot_failures", boot_failures)
+        return True
 
-loop = asyncio.get_event_loop()
-loop.run_forever()
 
-logger.flush_stream()
-loop.close()
+def boot_ok():
+    settings.set("boot_failures", 0)
+    
+
+if settings.get_bool("autostart"):
+    if boot_check():
+        enable_ui = settings.get_bool("enable_ui")
+
+        system = System(ui=enable_ui)
+        boot_ok()
+        loop = asyncio.get_event_loop()
+        loop.run_forever()
+
+        logger.flush_stream()
+        loop.close()
+else:
+    print("autostart is False, exiting..")
+    
