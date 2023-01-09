@@ -1,0 +1,93 @@
+﻿@page "/pico_controller_timer_setpoints"
+@using Devices
+@using HomeAutomationServer.Data;
+@using PicoController
+@using Shirehorse.Core.Extensions
+@using static PicoController.PicoBoilerTimerControlPolicy;
+
+<PageTitle>Boiler Timer</PageTitle>
+
+@if (_boilerController.TimerPolicy is not null)
+{
+    <h2>Timer Setpoints</h2>
+
+    <h4>
+        <button @onclick="Add_Clicked">
+            Add
+        </button>
+        <button @onclick="Save_Clicked">
+            Save
+        </button>
+    </h4>
+
+    <table class="table">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Day</th>
+                    <th>Hour</th>
+                    <th>Minute</th>
+                    <th>Setpoint</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var setpoint in _boilerController.TimerPolicy.OrderedSetpoints)
+                {
+                    <tr>
+                        <td>
+                            <button @onclick="@(e => Delete_Clicked(e, setpoint))">
+                                Delete
+                            </button>
+                        </td>
+                        <td>
+                            <select @bind=@setpoint.Day>
+                                @foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
+                                {
+                                    <option value=@day>@day.ToString()</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <select @bind=@setpoint.Hour >
+                                @for (int h = 0; h < 24; h++)
+                                {
+                                    <option value=@h>@h.ToString()</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <select @bind=@setpoint.Min>
+                                @for (int h = 0; h < 60; h+=15)
+                                {
+                                    <option value=@h>@h.ToString("00")</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                        <button @onclick="@(e => Enable_Clicked(e, setpoint))">
+                            @(setpoint.Enabled ? "ON" : "OFF")
+                        </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+}
+
+@code {
+    private PicoBoilerControllerModel _boilerController => Program.HardwareModel.PicoBoilerController;
+
+    private void Add_Clicked() => _boilerController.TimerPolicy!.Setpoints.Add(new Setpoint());
+
+    private void Save_Clicked() => AppConfiguration.Save();
+
+    private void Delete_Clicked(MouseEventArgs e, Setpoint setpoint)
+    {
+        _boilerController.TimerPolicy!.Setpoints.Remove(setpoint);
+    }
+
+    private void Enable_Clicked(MouseEventArgs e, Setpoint setpoint)
+    {
+        setpoint.Enabled = !setpoint.Enabled;
+    }
+}

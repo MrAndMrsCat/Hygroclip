@@ -1,1 +1,1 @@
-rsync -a --progress "/mnt/c/Users/ajmes/source/HomeAutomation/" /mnt/nuc/storage/docker/Hygroclip/. --exclude *.git --exclude *.vs --exclude *bin --exclude *obj --exclude *publishprofiles --exclude *jenkins
+rsync -a --progress "/mnt/c/Users/ajmes/source/HomeAutomation/" /mnt/nuc/storage/docker/HomeAutomation/. --exclude *.git --exclude *.vs --exclude *bin --exclude *obj --exclude *publishprofiles --exclude *jenkins

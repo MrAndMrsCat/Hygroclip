@@ -1,5 +1,6 @@
 ﻿@page "/pico_controller_status"
 @using Devices
+@using HomeAutomationServer.Data;
 @using PicoController
 @using Shirehorse.Core.Extensions
 
@@ -33,7 +34,9 @@
 
     if (showTimerSetpoints)
     {
-        <table class="table">
+        <PicoControllerTimerSetpoints />
+
+@*        <table class="table">
             <thead>
                 <tr>
                     <th>Day</th>
@@ -53,7 +56,7 @@
                     </tr>
                 }
             </tbody>
-        </table>
+        </table>*@
     }
 }
 
@@ -78,7 +81,7 @@ else
             <select @onchange="TemperatureControlDeadband_OnChange" >
                 @foreach (double deadband in new double[] { 0.0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0 })
                 {
-                    <option value=@deadband>@deadband.ToString("N1")</option>
+                    <option value=@deadband>@deadband.ToString("N2")</option>
                 }
             </select>
             - @_boilerController.ControlPolicy?.ThermostatDeadband°C<br />
@@ -171,6 +174,7 @@ else
         int enumCount = Enum.GetValues(typeof(PicoBoilerTimerControlPolicy.ControlMode)).Length;
         int newEnum = ((int)_boilerController.Mode + 1) % enumCount;
         mode = (PicoBoilerTimerControlPolicy.ControlMode)newEnum;
+        AppConfiguration.Save();
     }
 
     private void TemperatureControlDeadband_OnChange(ChangeEventArgs e)

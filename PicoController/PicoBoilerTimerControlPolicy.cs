@@ -8,7 +8,22 @@ namespace PicoController
 {
     public class PicoBoilerTimerControlPolicy
     {
-        public readonly record struct Setpoint(DayOfWeek Day, int Hour, int Min, bool Enabled);
+        public class Setpoint
+        {
+            public Setpoint() {  }
+            public Setpoint(DayOfWeek day, int hour, int min, bool enabled)
+            {
+                Day= day;
+                Hour= hour;
+                Min= min;
+                Enabled= enabled;
+            }
+
+            public DayOfWeek Day { get; set; }
+            public int Hour { get; set; }
+            public int Min { get; set; }
+            public bool Enabled { get; set; }   
+        }
 
         public PicoBoilerTimerControlPolicy(PicoBoilerInterface boilerInterface)
         {
@@ -55,27 +70,27 @@ namespace PicoController
             if (BoostEndMinutes > BoostLimitMinutes) BoostEndDateTime = null;
         }
 
-        public List<Setpoint> Setpoints { get; } = new() 
-        {
-            new Setpoint(DayOfWeek.Monday, 7, 30, true),
-            new Setpoint(DayOfWeek.Monday, 21, 0, false),
-            new Setpoint(DayOfWeek.Tuesday, 7, 30, true),
-            new Setpoint(DayOfWeek.Tuesday, 8, 15, false),
-            new Setpoint(DayOfWeek.Tuesday, 15, 30, true),
-            new Setpoint(DayOfWeek.Tuesday, 21, 0, false),
-            new Setpoint(DayOfWeek.Wednesday, 7, 30, true),
-            new Setpoint(DayOfWeek.Wednesday, 21, 0, false),
-            new Setpoint(DayOfWeek.Thursday, 7, 30, true),
-            new Setpoint(DayOfWeek.Thursday, 8, 15, false),
-            new Setpoint(DayOfWeek.Thursday, 15, 30, true),
-            new Setpoint(DayOfWeek.Thursday, 21, 0, false),
-            new Setpoint(DayOfWeek.Friday, 7, 30, true),
-            new Setpoint(DayOfWeek.Friday, 21, 0, false),
-            new Setpoint(DayOfWeek.Saturday, 7, 30, true),
-            new Setpoint(DayOfWeek.Saturday, 21, 0, false),
-            new Setpoint(DayOfWeek.Sunday, 7, 30, true),
-            new Setpoint(DayOfWeek.Sunday, 21, 0, false),
-        };
+        public List<Setpoint> Setpoints { get; set; } = new();
+        //{
+        //    new Setpoint(DayOfWeek.Monday, 7, 30, true),
+        //    new Setpoint(DayOfWeek.Monday, 21, 0, false),
+        //    new Setpoint(DayOfWeek.Tuesday, 7, 30, true),
+        //    new Setpoint(DayOfWeek.Tuesday, 8, 15, false),
+        //    new Setpoint(DayOfWeek.Tuesday, 15, 30, true),
+        //    new Setpoint(DayOfWeek.Tuesday, 21, 0, false),
+        //    new Setpoint(DayOfWeek.Wednesday, 7, 30, true),
+        //    new Setpoint(DayOfWeek.Wednesday, 21, 0, false),
+        //    new Setpoint(DayOfWeek.Thursday, 7, 30, true),
+        //    new Setpoint(DayOfWeek.Thursday, 8, 15, false),
+        //    new Setpoint(DayOfWeek.Thursday, 15, 30, true),
+        //    new Setpoint(DayOfWeek.Thursday, 21, 0, false),
+        //    new Setpoint(DayOfWeek.Friday, 7, 30, true),
+        //    new Setpoint(DayOfWeek.Friday, 21, 0, false),
+        //    new Setpoint(DayOfWeek.Saturday, 7, 30, true),
+        //    new Setpoint(DayOfWeek.Saturday, 21, 0, false),
+        //    new Setpoint(DayOfWeek.Sunday, 7, 30, true),
+        //    new Setpoint(DayOfWeek.Sunday, 21, 0, false),
+        //};
         public IEnumerable<Setpoint> OrderedSetpoints => Setpoints
             .OrderBy(sp => sp.Day)
             .ThenBy(sp => sp.Hour)

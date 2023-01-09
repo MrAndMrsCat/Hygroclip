@@ -25,6 +25,8 @@ public class PicoBoilerControllerModel
         set
         {
             if (ControlPolicy is not null) ControlPolicy.TemperatureSetpoint = value;
+            AppConfiguration.Instance.TemperatureSetpoint = value;
+            AppConfiguration.Save();
         }
     }
 
@@ -37,6 +39,7 @@ public class PicoBoilerControllerModel
         set
         {
             if (TimerPolicy is not null) TimerPolicy.Mode = value;
+            AppConfiguration.Instance.ControlMode = value;
         }
     }
 
@@ -67,7 +70,13 @@ public class PicoBoilerControllerModel
         _pollingTimer.Elapsed += (s, e) => _boilerController.RequestStatus();
         _pollingTimer.Start();
 
-        Mode = PicoBoilerTimerControlPolicy.ControlMode.Timed;
+        Mode = AppConfiguration.Instance.ControlMode;
+        TemperatureSetpoint = AppConfiguration.Instance.TemperatureSetpoint;
+
+        if (TimerPolicy is not null)
+        {
+            TimerPolicy.Setpoints = AppConfiguration.Instance.TimerSetpoints;
+        }
     }
 
     internal void SendEnvironmentalMeasuremnt(float tempearure, float humidity)

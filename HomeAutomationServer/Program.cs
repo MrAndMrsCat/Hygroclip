@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Serilog.Events;
+using Serilog.Filters;
+using Serilog;
 using System.Configuration;
 
 namespace HomeAutomationServer;
@@ -14,7 +17,16 @@ public class Program
 
     public static void Main(string[] args)
     {
+        Serilog.Log.Logger = new LoggerConfiguration()
+           .MinimumLevel.ControlledBy(new(LogEventLevel.Debug))
+           //.WriteTo.Async(a => a.File(LogFilePath, fileSizeLimitBytes: 10000000, retainedFileCountLimit: 10))
+           .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug, theme: Serilog.Sinks.SystemConsole.Themes.SystemConsoleTheme.Literate)
+           //.Filter.ByIncludingOnly(Matching.FromSource<Log>())
+           .CreateLogger();
+
         var argAndParms = CommandLineParser.GetCommandLineArgs(args);
+
+        AppConfiguration.Load();
 
         Simulated = argAndParms.ContainsKey("simulated");
 
